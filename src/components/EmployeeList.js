@@ -4,9 +4,10 @@ import { EmployeeContext } from "../contexts/EmployeeContext";
 import {Button, Modal, Alert} from 'react-bootstrap'
 import AddForm from './AddForm';
 import Pagination from "./Pagination";
+import loading from '../assets/loading-icon-animated-gif-19.gif';
 
 const EmployeeList = () => {
-  const { sortedEmployees } = useContext(EmployeeContext);
+  const { employees } = useContext(EmployeeContext);
 
   const [show, setShow] = useState(false);
 
@@ -31,12 +32,12 @@ const EmployeeList = () => {
     return() =>{
       handleShowAlert();
     }
-  }, [sortedEmployees])
+  }, [employees])
 
   const indexOfLastEmployee = currentPage * employeesPerPage;
   const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
-  const currentEmployees = sortedEmployees.slice(indexOfFirstEmployee, indexOfLastEmployee);
-  const totalPagesNum = Math.ceil(sortedEmployees.length / employeesPerPage)
+  const currentEmployees = employees.slice(indexOfFirstEmployee, indexOfLastEmployee);
+  const totalPagesNum = Math.ceil(employees.length / employeesPerPage)
 
   return (
     <>
@@ -63,8 +64,12 @@ const EmployeeList = () => {
       <Alert show= {showAlert} variant="success"  dismissible>
       Employee List Updated Successfully!.
       </Alert>
-
-      <table className="table table-striped table-hover">
+      {
+          employees === undefined ? (
+            <img src={loading} alt="loading" />
+          ) : (
+            <>
+            <table className="table table-striped table-hover">
         <thead>
           <tr>
             <th>Name</th>
@@ -84,12 +89,11 @@ const EmployeeList = () => {
           }
         </tbody>
       </table>
-
-          <Pagination 
+      <Pagination 
           pages = {totalPagesNum} 
           setCurrentPage={setCurrentPage} 
           currentEmployees={currentEmployees} 
-            sortedEmployees={sortedEmployees}
+            employees={employees}
           />
 
       <Modal show={show} onHide={handleClose}>
@@ -103,6 +107,12 @@ const EmployeeList = () => {
           <Button  onClick={handleClose} variant='secondary'>Close</Button>
         </Modal.Footer>
       </Modal>
+      </>
+          )
+        }
+      
+
+          
     </>
   );
 };
